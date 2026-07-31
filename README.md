@@ -1,4 +1,4 @@
-# 🛡️ Stegano-Go
+# Stegano-Go
 
 ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
 ![Security](https://img.shields.io/badge/security-steganography-red.svg?style=for-the-badge)
@@ -8,7 +8,7 @@ Uma ferramenta de linha de comando desenvolvida em Go para ocultar e extrair men
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
 - **Ocultar Textos e Arquivos:** Esconda mensagens ou conteúdos de arquivos dentro de imagens PNG aparentemente normais.
 - **Extração Segura:** Recupere a mensagem escondida da imagem processada.
@@ -17,7 +17,7 @@ Uma ferramenta de linha de comando desenvolvida em Go para ocultar e extrair men
 - **Verificação de Capacidade:** Verifique quantos bytes podem ser escondidos em uma determinada imagem antes de tentar ocultar dados.
 - **CLI Amigável:** Interface colorida com ASCII art e parâmetros claros.
 
-## 📦 Instalação
+## Instalação
 
 Certifique-se de ter o [Go](https://golang.org/dl/) instalado (versão 1.21+).
 
@@ -32,7 +32,7 @@ cd stegano-go
 go build -o stegano-go main.go
 ```
 
-## 🛠️ Como Usar
+## Como Usar
 
 O `stegano-go` possui três modos principais: `encode`, `decode` e `capacity`.
 
@@ -69,15 +69,15 @@ Verifica o quanto de dados pode ser inserido em uma imagem PNG específica:
 ./stegano-go -mode capacity -image cover.png
 ```
 
-## 🖼️ Exemplos e Demonstração
+## Exemplos e Demonstração
 
 Para testar a ferramenta, você pode adicionar suas próprias imagens PNG na pasta `samples/`. 
 *(Nota: O repositório não inclui imagens de teste, por favor adicione as suas próprias para testar).*
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 Esta ferramenta foi desenvolvida com propósitos puramente **educacionais** e de pesquisa em segurança da informação. O autor não se responsabiliza pelo uso indevido deste software.
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
