@@ -1,83 +1,94 @@
-# Stegano-Go
+# Stegano
 
-![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
-![Security](https://img.shields.io/badge/security-steganography-red.svg?style=for-the-badge)
-![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)
+**LSB Image Steganography Utility with AES-256-GCM Envelope in Go**
 
-Uma ferramenta de linha de comando desenvolvida em Go para ocultar e extrair mensagens secretas em imagens PNG utilizando a técnica de Esteganografia LSB (Least Significant Bit).
+[![CI](https://github.com/ispectr3/stegano/actions/workflows/ci.yml/badge.svg)](https://github.com/ispectr3/stegano/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Go: 1.21+](https://img.shields.io/badge/Go-1.21%2B-00ADD8.svg?logo=go)](https://golang.org)
+[![Encryption: AES-256-GCM](https://img.shields.io/badge/Encryption-AES--256--GCM-green.svg)](stego/crypto.go)
+
+Stegano is a digital forensics and steganography tool written in Go that embeds and extracts arbitrary data within lossless PNG images using Least Significant Bit (**LSB**) manipulation. To prevent plaintext leakage and ensure integrity, payloads can be sealed with authenticated symmetric encryption (**AES-256-GCM**).
 
 ---
 
-## Funcionalidades
+## Technical Mechanism
 
-- **Ocultar Textos e Arquivos:** Esconda mensagens ou conteúdos de arquivos dentro de imagens PNG aparentemente normais.
-- **Extração Segura:** Recupere a mensagem escondida da imagem processada.
-- **Técnica LSB:** Utiliza o Bit Menos Significativo para alterar levemente os pixels da imagem (RGB), tornando a alteração imperceptível a olho nu.
-- **Criptografia AES-256:** (Opcional) Proteja suas mensagens com uma senha. Os dados são criptografados antes de serem ocultados, garantindo segurança adicional.
-- **Verificação de Capacidade:** Verifique quantos bytes podem ser escondidos em uma determinada imagem antes de tentar ocultar dados.
-- **CLI Amigável:** Interface colorida com ASCII art e parâmetros claros.
-
-## Instalação
-
-Certifique-se de ter o [Go](https://golang.org/dl/) instalado (versão 1.21+).
-
-1. Clone o repositório:
-```bash
-git clone https://github.com/kaique/stegano-go.git
-cd stegano-go
+```mermaid
+flowchart TD
+    A[Secret Payload Buffer] --> B{Password Provided?}
+    B -->|Yes| C[AES-256-GCM Envelope: SHA256 Key + 96-bit Nonce]
+    B -->|No| D[Raw Byte Stream]
+    C --> E[Length-Prefixed Framing: 32-bit BigEndian Header]
+    D --> E
+    E --> F[LSB Bit Slicer: 1 bit per RGB Color Sub-Pixel]
+    G[Cover PNG Image] --> H[Pixel Matrix Traversal]
+    F --> I[Staged PNG Stego Image]
+    H --> I
 ```
 
-2. Compile o projeto:
+---
+
+## Features
+
+- **Lossless LSB Encoding**: Injects payload bits into the least significant bit of Red, Green, and Blue color channels without visible perceptual degradation.
+- **Authenticated Encryption**: Optional AES-256-GCM encryption ensures hidden payloads cannot be decrypted or identified without the secret key.
+- **Capacity Calculation**: Utility mode (`-mode capacity`) inspects image dimensions and calculates max embeddable payload size.
+- **Pure Go Standard Library**: Uses Go's native `image/png` and `crypto/aes` packages with zero external C dependencies.
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Go 1.21+
+
 ```bash
-go build -o stegano-go main.go
+git clone https://github.com/ispectr3/stegano.git
+cd stegano
+go build -o stegano main.go
 ```
 
-## Como Usar
+---
 
-O `stegano-go` possui três modos principais: `encode`, `decode` e `capacity`.
+## Usage
 
-### 1. Ocultar Mensagem (Encode)
-Ocultar um texto diretamente pelo terminal:
+### 1. Check Image Capacity
+
+Determine maximum bytes embeddable in a target cover image:
+
 ```bash
-./stegano-go -mode encode -image cover.png -output secret.png -message "Esta é uma mensagem ultra secreta"
+./stegano -mode capacity -image cover.png
 ```
 
-Ocultar com proteção de senha (Criptografia AES):
+### 2. Embed Hidden Message (with AES-256 Encryption)
+
 ```bash
-./stegano-go -mode encode -image cover.png -output secret.png -message "Mensagem secreta" -password "MinhaSenhaForte"
+./stegano -mode encode \
+  -image cover.png \
+  -output stego.png \
+  -message "Confidential Operations Plan" \
+  -password "MySecretPassphrase"
 ```
 
-Ocultar um arquivo de texto:
+### 3. Extract and Decrypt Hidden Message
+
 ```bash
-./stegano-go -mode encode -image cover.png -output secret.png -file payload.txt
+./stegano -mode decode \
+  -image stego.png \
+  -password "MySecretPassphrase"
 ```
 
-### 2. Extrair Mensagem (Decode)
-Extrair uma mensagem não criptografada:
+---
+
+## Automated Testing
+
 ```bash
-./stegano-go -mode decode -image secret.png
+go test -v ./...
 ```
 
-Extrair uma mensagem criptografada:
-```bash
-./stegano-go -mode decode -image secret.png -password "MinhaSenhaForte"
-```
+---
 
-### 3. Verificar Capacidade
-Verifica o quanto de dados pode ser inserido em uma imagem PNG específica:
-```bash
-./stegano-go -mode capacity -image cover.png
-```
+## License
 
-## Exemplos e Demonstração
-
-Para testar a ferramenta, você pode adicionar suas próprias imagens PNG na pasta `samples/`. 
-*(Nota: O repositório não inclui imagens de teste, por favor adicione as suas próprias para testar).*
-
-## Disclaimer
-
-Esta ferramenta foi desenvolvida com propósitos puramente **educacionais** e de pesquisa em segurança da informação. O autor não se responsabiliza pelo uso indevido deste software.
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Stegano is open-source software licensed under the [MIT License](LICENSE).

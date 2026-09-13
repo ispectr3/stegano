@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kaique/stegano-go/stego"
+	"github.com/ispectr3/stegano/stego"
 )
 
 const (
